@@ -41,7 +41,7 @@ class UserPreference extends Model
         ];
     }
 
-    // ✅ Reuse base insert/update
+  
     public static function insertOrUpdate(mysqli $db, int $user_id, array $data): bool {
         $existing = self::find($db, $user_id);
         $data['user_id'] = $user_id;

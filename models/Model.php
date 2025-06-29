@@ -17,36 +17,35 @@ abstract class Model
         return $data ? new static($data) : null;
     }
 
-    // ✅ Reusable Insert Method
+  
     public static function insert(mysqli $db, array $data): bool {
         $columns = implode(", ", array_keys($data));
         $placeholders = implode(", ", array_fill(0, count($data), "?"));
 
         $sql = "INSERT INTO " . static::$table . " ($columns) VALUES ($placeholders)";
-        $stmt = $db->prepare($sql);
-        if (!$stmt) return false;
+        $query = $db->prepare($sql);
+        if (!$query) return false;
 
         $types = self::getTypes($data);
-        $stmt->bind_param($types, ...array_values($data));
+        $query->bind_param($types, ...array_values($data));
 
-        return $stmt->execute();
+        return $query->execute();
     }
 
-    // ✅ Reusable Update Method
+ 
     public static function update(mysqli $db, int $id, array $data): bool {
         $fields = implode(", ", array_map(fn($key) => "$key = ?", array_keys($data)));
 
         $sql = "UPDATE " . static::$table . " SET $fields WHERE " . static::$primary_key . " = ?";
-        $stmt = $db->prepare($sql);
-        if (!$stmt) return false;
+        $query = $db->prepare($sql);
+        if (!$query) return false;
 
         $types = self::getTypes($data) . "i";
-        $stmt->bind_param($types, ...array_merge(array_values($data), [$id]));
+        $query->bind_param($types, ...array_merge(array_values($data), [$id]));
 
-        return $stmt->execute();
+        return $query->execute();
     }
 
-    // ✅ Utility to Auto-Detect Bind Param Types
     private static function getTypes(array $data): string {
         $types = "";
         foreach ($data as $value) {

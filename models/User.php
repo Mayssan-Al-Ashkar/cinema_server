@@ -36,7 +36,6 @@ class User extends Model
         return password_verify($password, $this->password);
     }
 
-    // ✅ Reuse insert from base Model
     public static function create(mysqli $db, string $username, string $email, string $phone_nbr, string $password): bool {
         $hashedPassword = self::hashPassword($password);
         $data = [
@@ -45,7 +44,7 @@ class User extends Model
             'phone_nbr' => $phone_nbr,
             'password' => $hashedPassword
         ];
-        return self::insert($db, $data);  // <-- Base Model's insert
+        return self::insert($db, $data);  
     }
 
     public function getId(): int { return $this->id; }
