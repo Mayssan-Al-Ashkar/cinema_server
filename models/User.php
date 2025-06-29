@@ -20,7 +20,6 @@ class User extends Model
         $this->phone_nbr = $data["phone_nbr"];
     }
 
-    
     public static function findByEmailOrPhone(mysqli $db, string $identifier): ?User {
         $query = $db->prepare("SELECT * FROM users WHERE email = ? OR phone_nbr = ?");
         $query->bind_param("ss", $identifier, $identifier);
@@ -37,13 +36,18 @@ class User extends Model
         return password_verify($password, $this->password);
     }
 
+    // ✅ Reuse insert from base Model
     public static function create(mysqli $db, string $username, string $email, string $phone_nbr, string $password): bool {
         $hashedPassword = self::hashPassword($password);
-        $query = $db->prepare("INSERT INTO users (username, email, phone_nbr, password) VALUES (?, ?, ?, ?)");
-        $query->bind_param("ssss", $username, $email, $phone_nbr, $hashedPassword);
-        return $query->execute();
+        $data = [
+            'username' => $username,
+            'email' => $email,
+            'phone_nbr' => $phone_nbr,
+            'password' => $hashedPassword
+        ];
+        return self::insert($db, $data);  // <-- Base Model's insert
     }
-    
+
     public function getId(): int { return $this->id; }
     public function getUsername(): string { return $this->username; }
     public function getEmail(): string { return $this->email; }
@@ -64,4 +68,4 @@ class User extends Model
             'password' => $this->password
         ];
     }
-} 
+}
