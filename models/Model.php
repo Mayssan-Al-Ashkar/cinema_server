@@ -18,12 +18,12 @@ abstract class Model
     }
 
   
-    public static function insert(mysqli $db, array $data): bool {
+    public static function insert(mysqli $mysqli, array $data): bool {
         $columns = implode(", ", array_keys($data));
         $placeholders = implode(", ", array_fill(0, count($data), "?"));
 
         $sql = "INSERT INTO " . static::$table . " ($columns) VALUES ($placeholders)";
-        $query = $db->prepare($sql);
+        $query = $mysqli->prepare($sql);
         if (!$query) return false;
 
         $types = self::getTypes($data);
@@ -33,11 +33,11 @@ abstract class Model
     }
 
  
-    public static function update(mysqli $db, int $id, array $data): bool {
+    public static function update(mysqli $mysqli, int $id, array $data): bool {
         $fields = implode(", ", array_map(fn($key) => "$key = ?", array_keys($data)));
 
         $sql = "UPDATE " . static::$table . " SET $fields WHERE " . static::$primary_key . " = ?";
-        $query = $db->prepare($sql);
+        $query = $mysqli->prepare($sql);
         if (!$query) return false;
 
         $types = self::getTypes($data) . "i";

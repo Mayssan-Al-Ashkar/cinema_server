@@ -42,14 +42,14 @@ class UserPreference extends Model
     }
 
   
-    public static function insertOrUpdate(mysqli $db, int $user_id, array $data): bool {
-        $existing = self::find($db, $user_id);
+    public static function insertOrUpdate(mysqli $mysqli, int $user_id, array $data): bool {
+        $existing = self::find($mysqli, $user_id);
         $data['user_id'] = $user_id;
 
         if ($existing) {
-            return self::update($db, $user_id, $data);
+            return self::update($mysqli, $user_id, $data);
         } else {
-            return self::insert($db, $data);
+            return self::insert($mysqli, $data);
         }
     }
 }

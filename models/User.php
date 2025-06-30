@@ -20,8 +20,8 @@ class User extends Model
         $this->phone_nbr = $data["phone_nbr"];
     }
 
-    public static function findByEmailOrPhone(mysqli $db, string $identifier): ?User {
-        $query = $db->prepare("SELECT * FROM users WHERE email = ? OR phone_nbr = ?");
+    public static function findByEmailOrPhone(mysqli $mysqli, string $identifier): ?User {
+        $query = $mysqli->prepare("SELECT * FROM users WHERE email = ? OR phone_nbr = ?");
         $query->bind_param("ss", $identifier, $identifier);
         $query->execute();
         $data = $query->get_result()->fetch_assoc();
@@ -36,7 +36,7 @@ class User extends Model
         return password_verify($password, $this->password);
     }
 
-    public static function create(mysqli $db, string $username, string $email, string $phone_nbr, string $password): bool {
+    public static function create(mysqli $mysqli, string $username, string $email, string $phone_nbr, string $password): bool {
         $hashedPassword = self::hashPassword($password);
         $data = [
             'username' => $username,
@@ -44,7 +44,7 @@ class User extends Model
             'phone_nbr' => $phone_nbr,
             'password' => $hashedPassword
         ];
-        return self::insert($db, $data);  
+        return self::insert($mysqli, $data);  
     }
 
     public function getId(): int { return $this->id; }
