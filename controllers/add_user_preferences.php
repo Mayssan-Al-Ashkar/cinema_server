@@ -21,7 +21,7 @@ if ($method === 'POST') {
     $userId = $input['user_id'] ?? null;
 
     if ($userId) {
-        $result = UserPreference::insert_update($mysqli, $userId, $input);
+        $result = UserPreference::insertOrUpdate($mysqli, $userId, $input);
 
         if ($result) {
             echo json_encode(['success' => true]);
