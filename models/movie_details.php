@@ -26,19 +26,43 @@ class MovieDetails extends Model {
         $this->cast_photo = $data["cast_photo"];
     }
 
-    public static function find(mysqli $mysqli, int $id): ?self {
-        $sql = "SELECT * FROM " . static::$table . " WHERE id = ?";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
+    // public static function find(mysqli $mysqli, int $id): ?self {
+    //     $sql = "SELECT * FROM " . static::$table . " WHERE id = ?";
+    //     $stmt = $mysqli->prepare($sql);
+    //     $stmt->bind_param("i", $id);
+    //     $stmt->execute();
+    //     $result = $stmt->get_result();
 
-        if ($data = $result->fetch_assoc()) {
-            return new self($data);
-        }
+    //     if ($data = $result->fetch_assoc()) {
+    //         return new self($data);
+    //     }
 
-        return null;
-    }
+    //     return null;
+    // }
+
+
+
+  
+    public function getId(): int { return $this->id; }
+    public function getTitle(): string { return $this->title; }
+    public function getDescription(): string { return $this->description; }
+    public function getGenre(): string { return $this->genre; }
+    public function getRating(): float { return $this->rating; }   
+    public function getReleaseDate(): string { return $this->release_date; }
+    public function getPhoto(): string { return $this->photo; }
+    public function getCast(): string { return $this->cast; }
+    public function getCastPhoto(): string { return $this->cast_photo; }
+
+
+    public function setTitle(string $title): void { $this->title = $title; }
+    public function setDescription(string $description): void { $this->description = $description; }
+    public function setGenre(string $genre): void { $this->genre = $genre; }
+    public function setRating(float $rating): void { $this->rating = $rating; }
+    public function setReleaseDate(string $release_date): void { $this->release_date = $release_date; }
+    public function setPhoto(string $photo): void { $this->photo = $photo; }
+    public function setCast(string $cast): void { $this->cast = $cast; }
+    public function setCastPhoto(string $cast_photo): void { $this->cast_photo = $cast_photo; }
+
 
     public function toArray(): array {
         return [

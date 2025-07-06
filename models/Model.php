@@ -46,6 +46,7 @@ abstract class Model
         return $query->execute();
     }
 
+
     private static function getTypes(array $data): string {
         $types = "";
         foreach ($data as $value) {
@@ -58,4 +59,5 @@ abstract class Model
         }
         return $types;
     }
+
 }

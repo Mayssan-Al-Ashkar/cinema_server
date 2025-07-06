@@ -2,6 +2,7 @@
 require_once '../connections/database.php';
 require_once '../models/UserPreference.php';
 
+
 header('Content-Type: application/json');
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -9,7 +10,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 if ($method === 'GET') {
     $userId = $_GET['user_id'] ?? null;
     if ($userId) {
-        $data = UserPreference::findByUserId($mysqli, intval($userId));
+        $data = UserPreference::find($mysqli, intval($userId));
         echo json_encode(['success' => true, 'data' => $data]);
     } else {
         echo json_encode(['success' => false, 'message' => 'Error']);
@@ -18,23 +19,32 @@ if ($method === 'GET') {
 
 if ($method === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
-    $userId = $input['user_id'] ?? null;
+    $user_id = $input['user_id'] ?? null;
 
-    if ($userId) {
-        $result = UserPreference::insertOrUpdate($mysqli, $userId, $input);
+    if ($user_id) {
+        $user_id = intval($user_id);
 
-        if ($result) {
-            echo json_encode(['success' => true]);
+        
+        $existing = UserPreference::find($mysqli, $user_id);
+        $input['user_id'] = $user_id;
+
+        if ($existing) {
+            $result = UserPreference::update($mysqli, $user_id, $input);
         } else {
-            echo json_encode([
-                'success' => false,
-                'message' => 'Database operation failed.',
-                'mysqli_error' => $mysqli->error 
-            ]);
+            $result = UserPreference::insert($mysqli, $input);
         }
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Error']);
-    }
-}
 
-?>  
+        echo json_encode([
+            'success' => $result,
+            'message' => $result ? 'Operation successful' : 'Database operation failed',
+            'mysqli_error' => $result ? null : $mysqli->error
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'User ID is required'
+        ]);
+    }
+
+}
+?>
