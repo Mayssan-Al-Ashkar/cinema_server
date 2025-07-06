@@ -1,20 +1,26 @@
 <?php
 require_once '../connections/database.php';
 require_once '../models/User.php';
+require_once '../services/ResponseService.php'; 
 
 header("Content-Type: application/json");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    login();
+}
+
+function login(): void {
     $input = json_decode(file_get_contents("php://input"), true);
 
     $identifier = trim($input['email'] ?? ''); 
-    $password = $input['password'] ?? '';
+    $password   = $input['password'] ?? '';
 
     if (!$identifier || !$password) {
-        echo json_encode(['error' => 'email/phone number and password are required']);
-        exit;
+        ResponseService::error_response('Email/phone number and password are required', 400);
+        return;
     }
 
+    global $mysqli;
     $user = User::findByEmailOrPhone($mysqli, $identifier);
 
     if ($user && $user->verifyPassword($password)) {
@@ -22,15 +28,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_id'] = $user->getId();
         $_SESSION['username'] = $user->getUsername();
 
-        echo json_encode([
-            "success" => true,
-            "message" => "Login successful!",
+        ResponseService::success_response([
+            "message"  => "Login successful!",
             "username" => $user->getUsername(),
-            "user_id" => $user->getId()
+            "user_id"  => $user->getId()
         ]);
     } else {
-        echo json_encode(["success" => false, "message" => "Invalid credential"]);
+        ResponseService::error_response("Invalid credentials", 401);
     }
-}  
-
-
+}
